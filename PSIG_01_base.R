@@ -37,8 +37,12 @@ spec_sqrt <- sqrt(spec_pc)
 # first, look up index of colnames in LCC taxon list
 sel <- match(colnames(spec_sqrt), LCC_taxon_list$VarName)
 
+sel
+
 # extract LCC class for each taxon
 LCC_code <- LCC_taxon_list$LCC_ID[sel]
+
+LCC_code
 
 # calculate column sums
 # no easy way to calc grouped columns sums directly
@@ -47,10 +51,10 @@ LCC_code <- LCC_taxon_list$LCC_ID[sel]
 spec_LCC <- t (rowsum(t(spec_sqrt), group=LCC_code))
 
 # Yes, that's right, there are 2 functions to perform rowsums in base R!
-# rowSums for non-grouped data and rowsum for grouped data. 
+# rowSums for non-grouped data and rowsum for grouped data. Obvious!
 
-# transpose returns a matrix so we also 
-# convert back to a data frame.  Colnames are numbers (LCC numeric classes)
+# transpose returns a matrix so we convert back to a data frame.  
+# Colnames are numbers (LCC numeric classes)
 # so we use check.names=FALSE to prevent R from prefixing 
 # colnames with "x"
 spec_LCC <- data.frame(spec_LCC, check.names=FALSE)
@@ -60,8 +64,8 @@ spec_LCC <- spec_LCC / rowSums(spec_LCC) * 100
 
 # Calculate the sum of tree (A = LCC classes 1-3) 
 # and open (C = LCC classes) and  Affinity score (A-C)
-spec_LCC$A <- rowSums(spec_LCC[, c("1", "2", "3")])
-spec_LCC$C <- rowSums(spec_LCC[, c("5", "6", "7")])
+spec_LCC$A <- rowSums(spec_LCC[, c("1", "2", "3")])  # arboreal classes
+spec_LCC$C <- rowSums(spec_LCC[, c("5", "6", "7")])  # open classes
 spec_LCC$Affinity <- spec_LCC$A - spec_LCC$C
 
 # Create land cover class for each level in the core (LCC2)
@@ -85,7 +89,8 @@ AC_nms <- c(A_nms, C_nms)
 LCC2_ID <- kit::nif(
   spec_LCC$Affinity > 20, as.integer(A_nms[apply(spec_LCC[, A_nms], 1, which.max)]),
   spec_LCC$Affinity < -20, as.integer(C_nms[apply(spec_LCC[, C_nms], 1, which.max)]),
-  default = ifelse(as.integer(AC_nms[apply(spec_LCC[, AC_nms], 1, which.max)]) < 4, 
+  default = ifelse(as.integer(AC_nms[apply(spec_LCC[, AC_nms], 1, 
+                                           which.max)]) < 4, 
                    8L,
                    as.integer(AC_nms[apply(spec_LCC[, AC_nms], 1, which.max)]) + 4L)
 )
@@ -99,7 +104,7 @@ LCC2 <- cbind(depth_age, spec_LCC)
 # merge with LCC2 lookup table to add LCC2 names to rows for plotting
 LCC2 <- merge(LCC2, LCC2_assem_classes, by="LCC2_ID", all.x=TRUE, sort=FALSE)
 
-# Output from merge is either sorts by the key (ie. LCC, which we don't want), 
+# Output from merge is either sorts by the key (ie. LCC, which we don't want), or
 # in an unspecified order (yes, the help really does say this).
 # so re-sort data by Depth
 LCC2 <- LCC2[order(LCC2$Depth), ]
@@ -156,16 +161,4 @@ if (0) {
 # each column (ie. taxon) and then use a condition to either create a
 # logical vector to index the required columns
 # vector using a or a numeric vector 
-
-sp_max <- apply(spec_pc, 2, max)
-#or 
-sp_max <- sapply(spec_pc, max)
-
-# Then use the max values as a condition to subset columns
-tmp <- spec_pc[, sp_max > 2]
-
-strat.plot(tmp[, -c(1:2)], yvar=depth_age$Age_BP, 
-    scale.percent=TRUE, y.rev=TRUE, 
-    cex.xlabel=0.8, yTop=0.7, plot.poly=TRUE,
-    col.poly="darkgreen")
 

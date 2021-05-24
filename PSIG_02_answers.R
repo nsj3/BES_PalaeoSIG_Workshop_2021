@@ -90,11 +90,15 @@ allpoll_aff <- allpoll_LCC2 %>%
 # when summarising many columns is:
 allpoll_aff <- allpoll_LCC2 %>% 
   filter(Age_BP <= 9000) %>%
-  mutate(Age2=cut_width(Age_BP, boundary=0, width=200, labels=FALSE) * 200 - 200) %>%
+  mutate(Age2=cut_width(Age_BP, boundary=0, 
+                        width=200, labels=FALSE) * 200 - 200) %>%
   group_by(Age2) %>%
-  summarise(across(.cols=Affinity, .fns=list(mean=mean, sd=sd), .names="Aff_{.fn}")) 
+  summarise(across(.cols=Affinity, 
+                   .fns=list(mean=mean, sd=sd), 
+                   .names="Aff_{.fn}")) 
 
-ggplot(allpoll_aff, aes(Age2, y=Aff_mean, ymin=Aff_mean-Aff_sd, ymax=Aff_mean+Aff_sd)) +
+ggplot(allpoll_aff, aes(Age2, y=Aff_mean, ymin=Aff_mean-Aff_sd, 
+                        ymax=Aff_mean+Aff_sd)) +
   geom_line() +
   geom_errorbar()
 

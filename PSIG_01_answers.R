@@ -22,6 +22,18 @@ if (0) {
 # logical vector to index the required columns
 # vector using a or a numeric vector 
 
+sp_max <- apply(spec_pc, 2, max)
+#or 
+sp_max <- sapply(spec_pc, max)
+
+# Then use the max values as a condition to subset columns
+tmp <- spec_pc[, sp_max > 2]
+
+strat.plot(tmp[, -c(1:2)], yvar=depth_age$Age_BP, 
+    scale.percent=TRUE, y.rev=TRUE, 
+    cex.xlabel=0.8, yTop=0.7, plot.poly=TRUE,
+    col.poly="darkgreen")
+
 ############################################################
 
 # Tidyverse
