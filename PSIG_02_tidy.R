@@ -129,12 +129,10 @@ ggplot(allpoll_agg, aes(x=PC, y=Age2)) +
   scale_y_reverse(breaks=seq(0, 10000, by=1000)) +
   labs(x="%", y="Years BP") + my_theme
 
-# Trick to force ggplot to use a minimum of 10 for the x-axis limit
+# or combine the two calls to max in one line
 allpoll_agg <- allpoll_agg %>%
-  group_by(Age2, LCC2_ID, LCC2_name) %>%
-  mutate(x_lim = max(PC)) %>%
-  rowwise() %>%
-  mutate(x_lim = max(10, x_lim)) 
+  group_by(LCC2_ID, LCC2_name) %>%
+  mutate(x_lim = max(max(PC), 10))
 
 # add geom_blank to force x-axis limits
 ggplot(allpoll_agg, aes(x=PC, y=Age2)) +

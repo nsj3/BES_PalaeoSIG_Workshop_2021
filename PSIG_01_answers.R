@@ -19,8 +19,8 @@ if (0) {
 # less that 2% max abundance omitted
 # Hint: in base R I would use apply or sapply to calculate the max of 
 # each column (ie. taxon) and then use a condition to either create a
-# logical vector to index the required columns
-# vector using a or a numeric vector 
+# logical vector to index the required columns or a numeric vector of 
+# column numbers
 
 sp_max <- apply(spec_pc, 2, max)
 #or 
